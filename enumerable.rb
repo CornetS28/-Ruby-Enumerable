@@ -2,40 +2,39 @@ module Enumerable #module begins
 
     def my_each #my_each method begins
         index = 0
-        while  index < self.length #while loop begins
+        while  index < self.length
             yield(self[index])
              index+=1
-        end #while loop ends
+        end 
        self
     end #my_each method end
+  
 
     def my_each_with_index #my_each_with_index method begins
         index = 0
-        while  index < self.length #while loop begins
+        while  index < self.length #
             yield(self[index], index)
              index+=1
-        end #while loop ends
-       self
+        end 
     end #my_each_with_index  method begins
+
 
     def my_select #my_select method begins
         result_array = []
         
-        self.my_each do |i| #iteration begins
-          yield(i) ? result_array.push(i) : ""
-         end #iteration ends
-         result_array
+        self.my_each do |i|
+          yield(i) ? result_array.push(i) : result_array
+         end 
       end #my_select method ends
-    
-    def my_all #my_all method begins
-      result_array = []
-      status = false
-      self.my_each do |x| #iteration begins
-        yield(x) ? result_array .push(true) : result_array.push(false)
-      end #iteration ends
-      result_array.my_each do |i| #iteration begins
-        i ? (return status = true) : (return status)
-        end #iteration ends
+
+
+    def my_all? #my_all method begins
+       self.my_each { |i|
+         if !yield(i)
+           return false
+         end
+       }
+       return true
     end #my_all method ends
 
     def my_any #my_any method begins
@@ -53,14 +52,13 @@ module Enumerable #module begins
 		((self.my_any { |i| yield(i) == true }) == true) ? false : true 
     end # my_none method ends
     
-    def my_inject #my_inject method begins
-		i = self.shift
-		j = i
-		self.my_each { |num| i = yield(i, num); i }
-		self.unshift(j)
-		i
+  
+    def my_inject startingPoint #my_inject method begins
+        self.my_each{|i| startingPoint = yield(startingPoint, i)}
+        startingPoint
     end #my_inject method ends
     
+
     def my_count(arg=nil) #my_count method begins
         truth_array = []
     
@@ -86,9 +84,6 @@ module Enumerable #module begins
        
         mapped_array
       end #my_map method ends
-    
-    
-
 
 end #module ends
 
@@ -111,7 +106,8 @@ arr.my_select { |number| puts number + 2}
 puts "........"
 
 puts "MY_ALL"
-puts arr2.my_all { |i| i.length > 9 }
+puts arr2.all?
+puts arr2.my_all? { |i| i}
 puts "........"
 
 puts "MY_ANY"
@@ -123,8 +119,9 @@ puts arr.my_none? { |x| x == 0 }
 puts arr.my_none? { |x| x == 3 }
 puts "........"
 
-puts "INJECT"
-puts arr.my_inject { |sum,x| sum += x }
+puts "INJECT.............................................."
+puts arr.inject { |sum,x| sum += x }
+puts arr.my_inject(0) { |sum,x| sum += x }
 puts "........"
 
 puts "MAP"
@@ -137,8 +134,8 @@ puts "Ruby is fun!".split("").my_count
 puts "....."
 
 puts "MULTIPLES_ELS"
-def multiply_els(ary)
-	ary.my_inject { |x,num|  x *= num }
+def multiply_els(arr)
+	arr.my_inject(1) { |x,num|  x *= num }
 end
 puts multiply_els([2,4])
 puts "....."
